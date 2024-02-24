@@ -8,10 +8,10 @@ import {
 } from '@remix-run/react'
 import { Analytics } from '@vercel/analytics/react'
 import type { LinksFunction } from '@vercel/remix'
-import stylesheet from '~/tailwind.css'
+import tailwind from '~/styles/tailwind.css'
 
 export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: stylesheet },
+  { rel: 'stylesheet', href: tailwind },
 ]
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="flex min-h-screen flex-col">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

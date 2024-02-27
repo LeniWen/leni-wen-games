@@ -12,6 +12,7 @@ export default function Index() {
   return (
     <div>
       <Link to="/hangman">hangman game</Link>
+      <Link to="/2048">2048</Link>
     </div>
 
   )

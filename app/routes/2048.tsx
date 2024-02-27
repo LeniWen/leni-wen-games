@@ -1,8 +1,8 @@
 import type { LinksFunction, MetaFunction } from '@vercel/remix'
 import { Fragment, useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
-import type { Tile } from '~/hooks/useGameManager'
-import { ROWS, START_TILES, addRandomTile, gameStore } from '~/hooks/useGameManager'
+import type { Tile } from '~/store/gameStore'
+import { ROWS, START_TILES, addRandomTile, gameStore } from '~/store/gameStore'
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [

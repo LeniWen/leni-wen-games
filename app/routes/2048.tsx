@@ -1,8 +1,8 @@
 import type { LinksFunction, MetaFunction } from '@vercel/remix'
 import { Fragment, useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
-import type { Tile } from '~/store/gameStore'
-import { ROWS, START_TILES, addRandomTile, gameStore } from '~/store/gameStore'
+import type { Direction, Tile } from '~/store/gameStore'
+import { ROWS, START_TILES, addRandomTile, gameStore, move } from '~/store/gameStore'
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [
@@ -18,8 +18,11 @@ export const meta: MetaFunction = () => {
 
 export default function Game() {
   const { cells } = useSnapshot(gameStore)
+  // React.effect run twice in React strict mode.
+  // Using a trick way to ensure effect runs once.
   const effectRunOncePlease = useRef(false)
 
+  // Effect run once
   useEffect(() => {
     if (effectRunOncePlease.current)
       return
@@ -27,8 +30,49 @@ export default function Game() {
 
     for (let i = 0; i < START_TILES; i++)
       addRandomTile()
+  }, [])
+  useEffect(() => {
+    const MOVE_UP = /^(ArrowUp|w|k)$/
+    const MOVE_RIGHT = /^(ArrowRight|d|l)$/
+    const MOVE_DOWN = /^(ArrowDown|s|j)$/
+    const MOVE_LEFT = /^(ArrowLeft|a|h)$/
 
-    return () => {}
+    function listen(event: KeyboardEvent) {
+      const modifier = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
+
+      if (modifier)
+        return
+
+      // 0 for up, 1 for right, 2 for down, 3 for left
+      let direction: Direction | null = null
+
+      switch (true) {
+        case MOVE_UP.test(event.key):
+          direction = 0
+          break
+        case MOVE_RIGHT.test(event.key):
+          direction = 1
+          break
+        case MOVE_DOWN.test(event.key):
+          direction = 2
+          break
+        case MOVE_LEFT.test(event.key):
+          direction = 3
+          break
+      }
+      if (direction !== null) {
+        event.preventDefault()
+        move(direction)
+      }
+      if (event.key === 'r') {
+        // TODO replay
+      }
+    }
+    window.addEventListener('keydown', listen)
+
+    return () => {
+      window.removeEventListener('keydown', listen)
+    }
   }, [])
 
   return (

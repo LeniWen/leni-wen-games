@@ -134,7 +134,17 @@ export function move(direction: Direction) {
   const traverse = buildTraverseDirection(directionTag)
   let mergeTo: Position | null = null
   let moveTo: Position | null = null
+  let moved = false
 
+  // prepareTiles()
+  for (let i = 0; i < ROWS; i++) {
+    for (let j = 0; j < COLS; j++) {
+      const tile = gameStore.cells[i + j * COLS]
+
+      if (tile)
+        tile.mergedFrom = undefined
+    }
+  }
   traverse.x.forEach((x) => {
     traverse.y.forEach((y) => {
       const tile = gameStore.cells[x + y * COLS]
@@ -177,8 +187,14 @@ export function move(direction: Direction) {
         }
         else if (moveTo) {
           moveTile(tile, moveTo)
+          debugger
+          moved = true
         }
       }
     })
   })
+  if (moved) {
+    // game over ?
+    addRandomTile()
+  }
 }

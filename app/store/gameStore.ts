@@ -187,7 +187,6 @@ export function move(direction: Direction) {
         }
         else if (moveTo) {
           moveTile(tile, moveTo)
-          debugger
           moved = true
         }
       }

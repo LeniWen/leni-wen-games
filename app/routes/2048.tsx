@@ -3,7 +3,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
 import { bcls } from '~/lib/bcls'
 import type { Direction, Tile } from '~/store/gameStore'
-import { ROWS, START_TILES, addRandomTile, gameStore, move } from '~/store/gameStore'
+import { START_TILES, addRandomTile, gameStore, move } from '~/store/gameStore'
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [
@@ -86,7 +86,6 @@ export default function Game() {
             )
           })}
         </Fragment>
-        {/* THIS IS UGLY */}
         {(cells.filter(Boolean) as Tile[]).map((tile) => {
           return (
             <div

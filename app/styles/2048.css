@@ -19,12 +19,12 @@
 }
 
 .tile {
-    --x: 2;
-    --y: 1;
     --background-lightness: 40%;
     --text-lightness: 90%;
+    --transition-ms: 100ms;
 
     position: absolute;
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -39,6 +39,11 @@
     animation: show 200ms ease-in-out;
     /* transition: 100ms ease-in-out; */
     transition: var(--transition-ms) ease-in-out;
+  }
+
+  .tile-merged {
+    z-index: 20;
+    animation-delay: 100ms;
   }
   
   @keyframes show {

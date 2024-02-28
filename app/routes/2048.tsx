@@ -1,6 +1,7 @@
 import type { LinksFunction, MetaFunction } from '@vercel/remix'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useSnapshot } from 'valtio'
+import { bcls } from '~/lib/bcls'
 import type { Direction, Tile } from '~/store/gameStore'
 import { ROWS, START_TILES, addRandomTile, gameStore, move } from '~/store/gameStore'
 import gameStyle from '~/styles/2048.css'
@@ -87,9 +88,14 @@ export default function Game() {
         </Fragment>
         {/* THIS IS UGLY */}
         {(cells.filter(Boolean) as Tile[]).map((tile) => {
-          const key = tile.x * ROWS + tile.y
           return (
-            <div className="tile" style={{ '--x': tile.x, '--y': tile.y }} key={key}>{tile!.value}</div>
+            <div
+              className={bcls('tile')}
+              style={{ '--x': tile.x, '--y': tile.y }}
+              key={tile.key}
+            >
+              {tile.value}
+            </div>
           )
         })}
       </div>

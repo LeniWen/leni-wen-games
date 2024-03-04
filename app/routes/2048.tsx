@@ -1,9 +1,11 @@
 import type { LinksFunction, MetaFunction } from '@vercel/remix'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { bcls } from '~/lib/bcls'
-import type { Direction, Tile } from '~/store/gameStore'
-import { START_TILES, addRandomTile, gameStore, move } from '~/store/gameStore'
+import { START_TILES, addRandomTile, game2048Store, move } from '~/store/2048Store'
+import type { Direction, Tile as ITile } from '~/store/2048Store'
+
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [
@@ -18,9 +20,8 @@ export const meta: MetaFunction = () => {
 }
 
 export default function Game() {
-  const { cells } = useSnapshot(gameStore)
-  // React.effect run twice in React strict mode.
-  // Using a trick way to ensure effect runs once.
+  // Effect run twice in React strict mode
+  // Using a trick way to ensure effect runs once
   const effectRunOncePlease = useRef(false)
 
   // Effect run once
@@ -79,25 +80,78 @@ export default function Game() {
   return (
     <section>
       <div className="game-board">
-        <Fragment key="cells">
-          {cells.map((_, index) => {
-            return (
-              <div className="cell" key={index} />
-            )
-          })}
-        </Fragment>
-        {(cells.filter(Boolean) as Tile[]).map((tile) => {
-          return (
-            <div
-              className={bcls('tile')}
-              style={{ '--x': tile.x, '--y': tile.y }}
-              key={tile.key}
-            >
-              {tile.value}
-            </div>
-          )
-        })}
+        <Cells key="cells" />
+        <Tiles />
       </div>
     </section>
+  )
+}
+
+function Tiles() {
+  const { cells } = useSnapshot(game2048Store)
+  const tiles = cells.filter(Boolean) as ITile[]
+
+  return (
+    <Fragment>
+      {tiles.map((tile) => {
+        return (
+          <Fragment key={tile.key}>
+            <MergedTiles tile={tile} />
+            <Tile tile={tile} />
+          </Fragment>
+        )
+      })}
+    </Fragment>
+  )
+}
+
+function Tile({ tile }: { tile: ITile }) {
+  const style: CSSProperties = {
+    '--x': tile.x,
+    '--y': tile.y,
+  }
+
+  if (tile.prevPosition) {
+    style['--prev-x'] = tile.prevPosition.x
+    style['--prev-y'] = tile.prevPosition.y
+  }
+
+  return (
+    <div
+      className="tile"
+      style={style}
+    >
+      {tile.value}
+    </div>
+  )
+}
+
+function MergedTiles({ tile }: { tile: ITile }) {
+  if (!tile.mergedFrom)
+    return null
+
+  return (
+    <Fragment>
+      {tile.mergedFrom.map(merged => (
+        <div
+          className="tile"
+          key={merged.key}
+        >
+          {merged.value}
+        </div>
+      ))}
+    </Fragment>
+  )
+}
+
+function Cells() {
+  const { cells } = useSnapshot(game2048Store)
+
+  return (
+    <Fragment>
+      {cells.map((_, index) => (
+        <div className="cell" key={index} />
+      ))}
+    </Fragment>
   )
 }

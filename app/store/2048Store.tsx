@@ -2,7 +2,7 @@ import { proxy } from 'valtio'
 
 const ROWS = 4
 const COLS = 4
-const START_TILES = 2
+export const START_TILES = 2
 const WON_SCORE = 2048
 /**
  * Each tile's value is 2 or 4, the possibility of 2 is 90%
@@ -13,7 +13,7 @@ interface Position {
   x: number
   y: number
 }
-interface Tile {
+export interface Tile {
   x: Position['x']
   y: Position['y']
   value: number
@@ -29,7 +29,7 @@ interface Store {
   over: boolean
   won: boolean
 }
-enum Direction {
+export enum Direction {
   Up,
   Right,
   Down,
@@ -40,7 +40,7 @@ interface MoveDirection {
   y: -1 | 0 | 1
 }
 
-const game2048Store = proxy<Store>({
+export const game2048Store = proxy<Store>({
   cells: Array(ROWS * COLS).fill(null),
   score: 0,
   bestScore: 0,
@@ -77,7 +77,7 @@ function clearTile(tile: Tile) {
   game2048Store.cells[tile.x + tile.y * COLS] = null
 }
 
-function addRandomTile() {
+export function addRandomTile() {
   const cells = availableCells()
 
   if (cells.length) {
@@ -217,9 +217,10 @@ export function move(direction: Direction) {
       // The next position where a merge is possible
       let next: Position | null = { x: x + moveDirection.x, y: y + moveDirection.y }
 
+      debugger
       while (withinBounds(next) && cellAvailable(next)) {
         farthest = next
-        next = { x: x + moveDirection.x, y: y + moveDirection.y }
+        next = { x: next.x + moveDirection.x, y: next.y + moveDirection.y }
       }
 
       const nextTile = withinBounds(next) ? getCell(next) : null

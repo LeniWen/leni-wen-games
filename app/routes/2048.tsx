@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react'
 import { Fragment, useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { bcls } from '~/lib/bcls'
-import { START_TILES, addRandomTile, game2048Store, move } from '~/store/2048Store'
+import { COLS, ROWS, START_TILES, addRandomTile, game2048Store, move } from '~/store/2048Store'
 import type { Direction, Tile as ITile } from '~/store/2048Store'
 
 import gameStyle from '~/styles/2048.css'
@@ -80,7 +80,7 @@ export default function Game() {
   return (
     <section>
       <div className="game-board">
-        <Cells key="cells" />
+        <Cells />
         <Tiles />
       </div>
     </section>
@@ -118,7 +118,13 @@ function Tile({ tile }: { tile: ITile }) {
 
   return (
     <div
-      className="tile"
+      className={bcls(
+        'tile',
+        `tile-${tile.value}`,
+        tile.mergedFrom && 'tile-merged',
+        tile.prevPosition && 'tile-moved',
+        !tile.mergedFrom && !tile.prevPosition && 'tile-new',
+      )}
       style={style}
     >
       {tile.value}
@@ -133,25 +139,20 @@ function MergedTiles({ tile }: { tile: ITile }) {
   return (
     <Fragment>
       {tile.mergedFrom.map(merged => (
-        <div
-          className="tile"
-          key={merged.key}
-        >
-          {merged.value}
-        </div>
+        <Tile tile={merged} />
       ))}
     </Fragment>
   )
 }
 
 function Cells() {
-  const { cells } = useSnapshot(game2048Store)
+  const cells = []
+
+  for (let i = 0; i < ROWS * COLS; i++)cells.push(i)
 
   return (
     <Fragment>
-      {cells.map((_, index) => (
-        <div className="cell" key={index} />
-      ))}
+      {cells.map(index => <div className="cell" key={index} />)}
     </Fragment>
   )
 }

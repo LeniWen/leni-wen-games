@@ -1,54 +1,142 @@
 .game-board {
-    --grid-size: 4;
-    --cell-size: 16vmin;
-    --cell-gap: 2vmin;
+  --grid-size: 4;
+  --cell-size: 16vmin;
+  --cell-gap: 2vmin;
 
-    display: grid;
-    grid-template-columns: repeat(var(--grid-size), var(--cell-size));
-    grid-template-rows: repeat(var(--grid-size), var(--cell-size));
-    background-color: #CCC;
-    gap: var(--cell-gap);
-    border-radius: 1vmin;
-    padding: var(--cell-gap);
-    position: relative;
+  display: grid;
+  gap: var(--cell-gap);
+  grid-template-columns: repeat(var(--grid-size), var(--cell-size));
+  grid-template-rows: repeat(var(--grid-size), var(--cell-size));
+  background-color: #ccc;
+  border-radius: 1vmin;
+  padding: var(--cell-gap);
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .cell {
-    background-color: #AAA;
-    border-radius: 1vmin;
+  background-color: #cdc1b4;
+  border-radius: 1vmin;
 }
 
 .tile {
-    --background-lightness: 40%;
-    --text-lightness: 90%;
-    --transition-ms: 100ms;
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border-radius: 1vmin;
+  top: calc(var(--y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+  left: calc(var(--x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+  font-weight: bold;
+  transition: 200ms ease-in-out;
+  font-size: clamp(1rem, 5vw, 2.4rem);
+  overflow: hidden;
+}
 
-    position: absolute;
-    z-index: 10;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: var(--cell-size);
-    height: var(--cell-size);
-    border-radius: 1vmin;
-    top: calc(var(--y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
-    left: calc(var(--x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
-    font-weight: bold;
-    background-color: hsl(200, 50%, var(--background-lightness));
-    color: hsl(200, 25%, var(--text-lightness));
-    animation: show 200ms ease-in-out;
-    /* transition: 100ms ease-in-out; */
-    transition: var(--transition-ms) ease-in-out;
-  }
+.tile-new {
+  animation: show 400ms ease-in-out;
+}
 
-  .tile-merged {
-    z-index: 20;
-    animation-delay: 100ms;
+.tile-moved {
+  animation: move 200ms ease-in-out;
+}
+
+.tile-merged {
+  animation: merged 200ms ease-in-out 100ms;
+  animation-fill-mode: backwards;
+}
+
+@keyframes merged {
+  0% {
+    transform: scale(0);
   }
-  
-  @keyframes show {
-    0% {
-      opacity: .5;
-      transform: scale(0);
-    }
+  50% {
+    transform: scale(1.2);
   }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes move {
+  from {
+    top: calc(var(--prev-y) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+    left: calc(var(--prev-x) * (var(--cell-size) + var(--cell-gap)) + var(--cell-gap));
+  }
+}
+
+@keyframes show {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tile-2 {
+  background-color: #eee4da;
+  color: #776e65;
+}
+
+.tile-4 {
+  background-color: #ede0c8;
+  color: #776e65;
+}
+
+.tile-8 {
+  background-color: #f2b179;
+  color: #f9f6f2;
+}
+
+.tile-16 {
+  background-color: #f59563;
+  color: #f9f6f2;
+}
+
+.tile-32 {
+  background-color: #f67c5f;
+  color: #f9f6f2;
+}
+
+.tile-64 {
+  background-color: #f65e3b;
+  color: #f9f6f2;
+}
+
+.tile-128 {
+  background-color: #edcf72;
+  color: #f9f6f2;
+}
+
+.tile-256 {
+  background-color: #edcc61;
+  color: #f9f6f2;
+}
+
+.tile-512 {
+  background-color: #edc850;
+  color: #f9f6f2;
+}
+
+.tile-1024 {
+  background-color: #edc53f;
+  color: #f9f6f2;
+}
+
+.tile-2048 {
+  background-color: #edc22e;
+  color: #f9f6f2;
+}
+
+.tile-4096 {
+  background-color: #a06ee1;
+  color: #f9f6f2;
+}

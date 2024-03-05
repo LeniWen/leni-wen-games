@@ -1,7 +1,7 @@
 import { proxy } from 'valtio'
 
-const ROWS = 4
-const COLS = 4
+export const ROWS = 4
+export const COLS = 4
 export const START_TILES = 2
 const WON_SCORE = 2048
 /**
@@ -217,8 +217,7 @@ export function move(direction: Direction) {
       // The next position where a merge is possible
       let next: Position | null = { x: x + moveDirection.x, y: y + moveDirection.y }
 
-      debugger
-      while (withinBounds(next) && cellAvailable(next)) {
+      while (withinBounds(next) && !cellAvailable(next)) {
         farthest = next
         next = { x: next.x + moveDirection.x, y: next.y + moveDirection.y }
       }
@@ -230,11 +229,11 @@ export function move(direction: Direction) {
 
         merged.mergedFrom = [tile, nextTile]
 
-        tile.x = nextTile.x
-        tile.y = nextTile.y
-
         insertTile(merged)
         clearTile(tile)
+
+        tile.x = nextTile.x
+        tile.y = nextTile.y
 
         game2048Store.score += merged.value
 
@@ -244,7 +243,7 @@ export function move(direction: Direction) {
       else {
         moveTile(tile, farthest)
       }
-      if (!(farthest.x === tile.x && farthest.y === tile.y)) // not the same position
+      if (!(tile.x === x && tile.y === y)) // not the same position
         moved = true
     })
   })

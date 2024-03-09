@@ -1,18 +1,35 @@
+.game-2048-container {
+  --cell-gap: 2vmin;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.game-panel {
+  background-color: #bdae93;
+  color: #424242;
+  border-radius: 1vmin;
+  padding: var(--cell-gap);
+  flex: 1;
+  font-size: clamp(1rem, 5vw, 1.2rem);
+}
+
 .game-board {
   --grid-size: 4;
   --cell-size: 16vmin;
-  --cell-gap: 2vmin;
 
   display: grid;
   gap: var(--cell-gap);
   grid-template-columns: repeat(var(--grid-size), var(--cell-size));
   grid-template-rows: repeat(var(--grid-size), var(--cell-size));
-  background-color: #ccc;
+  background-color: #8f7a66;
   border-radius: 1vmin;
   padding: var(--cell-gap);
   position: relative;
-  width: fit-content;
-  margin: 0 auto;
+  font-size: clamp(1rem, 5vw, 2.4rem);
 }
 
 .cell {

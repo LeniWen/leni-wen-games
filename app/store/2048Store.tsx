@@ -1,4 +1,4 @@
-import { proxy } from 'valtio'
+import { proxy, subscribe } from 'valtio'
 
 export const ROWS = 4
 export const COLS = 4
@@ -28,6 +28,9 @@ interface Store {
   bestScore: number
   over: boolean
   won: boolean
+  moved: number
+  lastTimestamp: number
+  canUndo?: boolean
 }
 export enum Direction {
   Up,
@@ -44,9 +47,45 @@ export const game2048Store = proxy<Store>({
   cells: Array(ROWS * COLS).fill(null),
   score: 0,
   bestScore: 0,
+  moved: 0,
   over: false,
   won: false,
+  lastTimestamp: 0,
 })
+
+export function restartGame() {
+  Object.assign(game2048Store, {
+    cells: Array(ROWS * COLS).fill(null),
+    score: 0,
+    moved: 0,
+    over: false,
+    won: false,
+    lastTimestamp: 0,
+    bestScore: game2048Store.bestScore,
+  })
+  for (let i = 0; i < START_TILES; i++)
+    addRandomTile()
+}
+
+export function undo() {
+  const originalCells = game2048Store.cells
+
+  game2048Store.canUndo = false
+  game2048Store.cells = Array(ROWS * COLS).fill(null)
+  originalCells.forEach((tile) => {
+    if (!tile)
+      return
+    if (tile.mergedFrom) {
+      tile.mergedFrom.forEach((mergedTile) => {
+        if (mergedTile.prevPosition)
+          insertTile(createTile({ x: mergedTile.prevPosition.x, y: mergedTile.prevPosition.y }, mergedTile.value))
+      })
+    }
+    else if (tile.prevPosition) {
+      insertTile(createTile({ x: tile.prevPosition.x, y: tile.prevPosition.y }, tile.value))
+    }
+  })
+}
 
 function availableCells(): Position[] {
   const positions = []
@@ -184,9 +223,9 @@ function canMove(): boolean {
 
       for (let direction = 0; direction < 4; direction++) {
         const moveDirection = getTileMoveDirection(direction)
-        const anotherTile = getCell({ x: x + moveDirection.x, y: moveDirection.y })
+        const anotherTile = getCell({ x: x + moveDirection.x, y: moveDirection.y }) as Tile
 
-        if (anotherTile && anotherTile.value === tile.value)
+        if (withinBounds(anotherTile) && anotherTile.value === tile.value)
           return true // These two tiles can be merged
       }
     }
@@ -224,7 +263,7 @@ export function move(direction: Direction) {
 
       const nextTile = withinBounds(next) ? getCell(next) : null
 
-      if (nextTile && !nextTile.mergedFrom && nextTile.value === tile.value) {
+      if (nextTile && !nextTile.mergedFrom && nextTile.value === tile.value) { // merge
         const merged = createTile(next, tile.value * 2)
 
         merged.mergedFrom = [tile, nextTile]
@@ -234,21 +273,26 @@ export function move(direction: Direction) {
 
         tile.x = nextTile.x
         tile.y = nextTile.y
-
         game2048Store.score += merged.value
+
+        if (game2048Store.bestScore < game2048Store.score)
+          game2048Store.bestScore = game2048Store.score
 
         if (game2048Store.score === WON_SCORE)
           game2048Store.won = true
       }
-      else {
+      else { // move
         moveTile(tile, farthest)
       }
-      if (!(tile.x === x && tile.y === y)) // not the same position
+      if (!(tile.x === x && tile.y === y)) { // not the same position
         moved = true
+      }
     })
   })
   if (moved) {
     addRandomTile()
+    game2048Store.moved += 1
+    game2048Store.canUndo = true
 
     if (!canMove())
       game2048Store.over = true

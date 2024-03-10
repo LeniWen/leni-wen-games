@@ -224,9 +224,14 @@ function canMove(): boolean {
 
       for (let direction = 0; direction < 4; direction++) {
         const moveDirection = getTileMoveDirection(direction)
+        const anotherP = { x: x + moveDirection.x, y: y + moveDirection.y }
+
+        if (!withinBounds(anotherP))
+          continue
+
         const anotherTile = getCell({ x: x + moveDirection.x, y: y + moveDirection.y })
 
-        if (anotherTile && withinBounds(anotherTile) && anotherTile.value === tile.value)
+        if (anotherTile && anotherTile.value === tile.value)
           return true // These two tiles can be merged
       }
     }

@@ -10,10 +10,10 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div>
+    <section>
       <Link to="/hangman">hangman game</Link>
       <Link to="/2048">2048</Link>
-    </div>
+    </section>
 
   )
 }

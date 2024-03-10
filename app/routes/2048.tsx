@@ -6,6 +6,7 @@ import { bcls } from '~/lib/bcls'
 import { ts2HMS } from '~/lib/time'
 import { COLS, ROWS, START_TILES, addRandomTile, game2048Store, move, restartGame, undo } from '~/store/2048Store'
 import type { Direction, Tile as ITile } from '~/store/2048Store'
+import { notify } from '~/store/notificationStore'
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [
@@ -27,11 +28,13 @@ export default function Game() {
   useEffect(() => {
     if (effectRunOncePlease.current)
       return
+
     effectRunOncePlease.current = true
 
     for (let i = 0; i < START_TILES; i++)
       addRandomTile()
   }, [])
+  // keyboard listener
   useEffect(() => {
     const MOVE_UP = /^(ArrowUp|w|k)$/
     const MOVE_RIGHT = /^(ArrowRight|d|l)$/
@@ -90,6 +93,22 @@ export default function Game() {
   )
 }
 
+function Panel() {
+  return (
+    <div className="game-panel grid grid-cols-2 grid-rows-2 gap-1">
+      <p className="flex items-center justify-center rounded-[1vmin] bg-[#f5f5dc] text-[clamp(2.4rem,5vw,2.4rem)] font-bold text-[#5d4037]">
+        2048
+      </p>
+
+      <Score />
+
+      <ActivityLogger />
+
+      <Action />
+    </div>
+  )
+}
+
 function Score() {
   const { score, bestScore } = useSnapshot(game2048Store)
 
@@ -107,17 +126,27 @@ function Score() {
   )
 }
 
-function StepTimer() {
+const TIMER_INTERVAL = 1000
+
+function ActivityLogger() {
   const { moved, lastTimestamp, over } = useSnapshot(game2048Store)
   const { minutes, seconds } = ts2HMS(lastTimestamp)
+  const effectRunOncePlease = useRef(false)
 
   useEffect(() => {
-    if (over)
+    if (effectRunOncePlease.current)
       return
 
+    effectRunOncePlease.current = true
+
+    if (over) {
+      notify({ type: 'info', message: 'GAME OVER' }, false)
+      return
+    }
+
     const game2048TimerId = setTimeout(() => {
-      game2048Store.lastTimestamp += 1000
-    }, 1000)
+      game2048Store.lastTimestamp += TIMER_INTERVAL
+    }, TIMER_INTERVAL)
 
     return () => {
       clearTimeout(game2048TimerId)
@@ -149,20 +178,6 @@ function Action() {
     <div className="grid grid-cols-2 gap-1 text-[1.6rem] text-[#f0f0f0]">
       <button onClick={restartGame} className="flex items-center justify-center rounded-[1vmin] bg-[#e74c3c] hover:bg-[#ff6e57] focus:bg-[#f39c12]">NEW</button>
       <button onClick={undo} disabled={!canUndo} className="flex items-center justify-center rounded-[1vmin] bg-[#e74c3c] hover:bg-[#ff6e57] focus:bg-[#f39c12] disabled:cursor-not-allowed disabled:bg-[#bdc3c7] disabled:text-[#ecf0f1]">UNDO</button>
-    </div>
-  )
-}
-
-function Panel() {
-  return (
-    <div className="game-panel grid grid-cols-2 grid-rows-2 gap-1">
-      <p className="flex items-center justify-center rounded-[1vmin] bg-[#f5f5dc] text-[clamp(2.4rem,5vw,2.4rem)] font-bold text-[#5d4037]">2048</p>
-
-      <Score />
-
-      <StepTimer />
-
-      <Action />
     </div>
   )
 }
@@ -200,13 +215,23 @@ function Tile({ tile }: { tile: ITile }) {
     <div
       className={bcls(
         'tile',
-        `tile-${tile.value}`,
+        tile.value > 2047 ? 'tile-target-value' : `tile-${tile.value}`,
         tile.mergedFrom && 'tile-merged',
         tile.prevPosition && 'tile-moved',
         !tile.mergedFrom && !tile.prevPosition && 'tile-new',
       )}
       style={style}
     >
+      {tile.value > 2047
+        ? (
+          <Fragment>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </Fragment>
+          )
+        : null}
       {tile.value}
     </div>
   )

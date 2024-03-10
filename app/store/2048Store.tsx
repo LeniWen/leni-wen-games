@@ -235,7 +235,8 @@ function canMove(): boolean {
 }
 
 export function move(direction: Direction) {
-  if (game2048Store.over || game2048Store.won)
+  // if (game2048Store.over || game2048Store.won)
+  if (game2048Store.over)
     return
 
   prepareTiles()
@@ -278,7 +279,7 @@ export function move(direction: Direction) {
         if (game2048Store.bestScore < game2048Store.score)
           game2048Store.bestScore = game2048Store.score
 
-        if (game2048Store.score === WON_SCORE)
+        if (merged.value === WON_SCORE)
           game2048Store.won = true
       }
       else { // move

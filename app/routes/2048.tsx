@@ -108,10 +108,13 @@ function Score() {
 }
 
 function StepTimer() {
-  const { moved, lastTimestamp } = useSnapshot(game2048Store)
+  const { moved, lastTimestamp, over } = useSnapshot(game2048Store)
   const { minutes, seconds } = ts2HMS(lastTimestamp)
 
   useEffect(() => {
+    if (over)
+      return
+
     const game2048TimerId = setTimeout(() => {
       game2048Store.lastTimestamp += 1000
     }, 1000)

@@ -7,7 +7,7 @@ export function Notifications() {
   const { notifications } = useSnapshot(notificationStore)
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-end justify-end space-y-4 px-4 py-6 sm:p-6">
+    <div className="fixed bottom-0 right-0 z-10 size-fit space-y-4 px-4 py-6 sm:p-6">
       {notifications.map(n => (
         <Notification key={n.id} notification={n} />
       ))}

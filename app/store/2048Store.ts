@@ -1,5 +1,6 @@
 import { proxy } from 'valtio'
 
+export const NOTIFICATION_2048_TAG = '2048'
 export const ROWS = 4
 export const COLS = 4
 export const START_TILES = 2
@@ -223,9 +224,9 @@ function canMove(): boolean {
 
       for (let direction = 0; direction < 4; direction++) {
         const moveDirection = getTileMoveDirection(direction)
-        const anotherTile = getCell({ x: x + moveDirection.x, y: moveDirection.y }) as Tile
+        const anotherTile = getCell({ x: x + moveDirection.x, y: y + moveDirection.y })
 
-        if (withinBounds(anotherTile) && anotherTile.value === tile.value)
+        if (anotherTile && withinBounds(anotherTile) && anotherTile.value === tile.value)
           return true // These two tiles can be merged
       }
     }
@@ -292,6 +293,7 @@ export function move(direction: Direction) {
   })
   if (moved) {
     addRandomTile()
+
     game2048Store.moved += 1
     game2048Store.canUndo = true
 

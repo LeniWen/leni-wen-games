@@ -7,6 +7,7 @@ export interface Notification {
   message: string
   id: string
   title?: string
+  tag?: string
 }
 interface NotificationStore {
   notifications: Notification[]
@@ -33,4 +34,16 @@ export function remove(id: string) {
   if (index === -1)
     return
   notificationStore.notifications.splice(index, 1)
+}
+
+export function removeByTag(tag: string) {
+  if (notificationStore.notifications.length === 0)
+    return
+
+  for (let i = notificationStore.notifications.length - 1; i >= 0; i--) {
+    const targetTag = notificationStore.notifications[i].tag
+
+    if (targetTag && targetTag === tag)
+      notificationStore.notifications.splice(i, 1)
+  }
 }

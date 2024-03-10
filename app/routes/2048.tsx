@@ -4,9 +4,9 @@ import { Fragment, useEffect, useRef } from 'react'
 import { useSnapshot } from 'valtio'
 import { bcls } from '~/lib/bcls'
 import { ts2HMS } from '~/lib/time'
-import { COLS, ROWS, START_TILES, addRandomTile, game2048Store, move, restartGame, undo } from '~/store/2048Store'
+import { COLS, NOTIFICATION_2048_TAG, ROWS, START_TILES, addRandomTile, game2048Store, move, restartGame, undo } from '~/store/2048Store'
 import type { Direction, Tile as ITile } from '~/store/2048Store'
-import { notify } from '~/store/notificationStore'
+import { notify, removeByTag } from '~/store/notificationStore'
 import gameStyle from '~/styles/2048.css'
 
 export const links: LinksFunction = () => [
@@ -33,6 +33,27 @@ export default function Game() {
 
     for (let i = 0; i < START_TILES; i++)
       addRandomTile()
+    // game2048Store.cells = [
+    //   { x: 0, y: 0, value: 16, key: '0' },
+    //   { x: 1, y: 0, value: 32, key: '1' },
+    //   { x: 2, y: 0, value: 2, key: '2' },
+    //   { x: 3, y: 0, value: 16, key: '3' },
+
+    //   { x: 0, y: 1, value: 8, key: '4' },
+    //   { x: 1, y: 1, value: 2, key: '5' },
+    //   { x: 2, y: 1, value: 4, key: '6' },
+    //   { x: 3, y: 1, value: 32, key: '7' },
+
+    //   { x: 0, y: 2, value: 4, key: '8' },
+    //   { x: 1, y: 2, value: 16, key: 'a' },
+    //   { x: 2, y: 2, value: 32, key: 'q' },
+    //   { x: 3, y: 2, value: 4, key: 'z' },
+
+    //   { x: 0, y: 3, value: 2, key: 'w' },
+    //   { x: 1, y: 3, value: 8, key: 's' },
+    //   { x: 2, y: 3, value: 4, key: 'x' },
+    //   { x: 3, y: 3, value: 2, key: 'g' },
+    // ]
   }, [])
   // keyboard listener
   useEffect(() => {
@@ -130,19 +151,19 @@ const TIMER_INTERVAL = 1000
 
 function ActivityLogger() {
   const { moved, lastTimestamp, over } = useSnapshot(game2048Store)
-  const { minutes, seconds } = ts2HMS(lastTimestamp)
   const effectRunOncePlease = useRef(false)
+  const { minutes, seconds } = ts2HMS(lastTimestamp)
 
   useEffect(() => {
-    if (effectRunOncePlease.current)
-      return
+    if (over && effectRunOncePlease.current)
+      notify({ type: 'info', message: 'GAME OVER', tag: NOTIFICATION_2048_TAG }, false)
 
     effectRunOncePlease.current = true
+  }, [over])
 
-    if (over) {
-      notify({ type: 'info', message: 'GAME OVER' }, false)
+  useEffect(() => {
+    if (over)
       return
-    }
 
     const game2048TimerId = setTimeout(() => {
       game2048Store.lastTimestamp += TIMER_INTERVAL
@@ -174,9 +195,14 @@ function ActivityLogger() {
 function Action() {
   const { canUndo } = useSnapshot(game2048Store)
 
+  function handleNewClick() {
+    restartGame()
+    removeByTag(NOTIFICATION_2048_TAG)
+  }
+
   return (
     <div className="grid grid-cols-2 gap-1 text-[1.6rem] text-[#f0f0f0]">
-      <button onClick={restartGame} className="flex items-center justify-center rounded-[1vmin] bg-[#e74c3c] hover:bg-[#ff6e57] focus:bg-[#f39c12]">NEW</button>
+      <button onClick={handleNewClick} className="flex items-center justify-center rounded-[1vmin] bg-[#e74c3c] hover:bg-[#ff6e57] focus:bg-[#f39c12]">NEW</button>
       <button onClick={undo} disabled={!canUndo} className="flex items-center justify-center rounded-[1vmin] bg-[#e74c3c] hover:bg-[#ff6e57] focus:bg-[#f39c12] disabled:cursor-not-allowed disabled:bg-[#bdc3c7] disabled:text-[#ecf0f1]">UNDO</button>
     </div>
   )

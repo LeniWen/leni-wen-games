@@ -2,9 +2,9 @@
   --cell-gap: 2vmin;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
   padding: 1rem;
-  width: fit-content;
   margin: 0 auto;
 }
 
@@ -20,6 +20,7 @@
 .game-board {
   --grid-size: 4;
   --cell-size: 16vmin;
+
   display: grid;
   gap: var(--cell-gap);
   grid-template-columns: repeat(var(--grid-size), var(--cell-size));

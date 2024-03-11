@@ -116,7 +116,7 @@ export default function Game() {
 
 function Panel() {
   return (
-    <div className="game-panel grid grid-cols-2 grid-rows-2 gap-1">
+    <div className="game-panel grid w-full grid-cols-2 grid-rows-2 gap-1">
       <p className="flex items-center justify-center rounded-[1vmin] bg-[#f5f5dc] text-[clamp(2.4rem,5vw,2.4rem)] font-bold text-[#5d4037]">
         2048
       </p>

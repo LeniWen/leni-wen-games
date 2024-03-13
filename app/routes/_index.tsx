@@ -13,6 +13,7 @@ export default function Index() {
     <section>
       <Link to="/hangman">hangman game</Link>
       <Link to="/2048">2048</Link>
+      <Link to="/minesweeper">Minesweeper</Link>
     </section>
 
   )

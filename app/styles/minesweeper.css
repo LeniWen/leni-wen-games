@@ -1,0 +1,19 @@
+.board {
+    display: grid;
+    justify-content: center;
+    gap: 0.2vmin;
+    grid-template-columns: repeat(var(--cols), 4vmin);
+    grid-template-rows: repeat(var(--rows), 4vmin);
+    background-color: #d3d3d3;
+}
+
+.cell {
+    background-color: #b22222;
+    cursor: pointer;
+    color: #0000FF;
+}
+
+.cell-empty {
+    background-color: #006400;
+}
+
